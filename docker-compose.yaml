@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    image: ghcr.io/privatebutts/bigbunther:main
+    build:
+      # Remove this section if you're not building from source
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      SNAPSHOT_URL: example.com/snapshot.jpg
+      DISCORD_TOKEN: YOUR_DISCORD_TOKEN

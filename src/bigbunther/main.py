@@ -18,7 +18,6 @@ log = structlog.get_logger()
 BASE_DIR = Path(__file__).resolve().parent
 
 # Take environment variables from .env file
-print(BASE_DIR)
 environ.Env.read_env(BASE_DIR / ".env")
 
 

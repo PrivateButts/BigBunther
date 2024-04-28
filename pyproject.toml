@@ -11,6 +11,7 @@ dependencies = [
     "aiohttp[speedups]>=3.9.5",
     "pillow>=10.3.0",
     "discord-py>=2.3.2",
+    "python-ffmpeg>=2.0.12",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"

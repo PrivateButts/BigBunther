@@ -5,7 +5,6 @@ import environ
 import aiohttp
 import structlog
 from ffmpeg.asyncio import FFmpeg
-from ffmpeg import Progress
 import discord
 from discord.ext import commands
 
@@ -27,6 +26,7 @@ SNAPSHOT_URL = env.str("SNAPSHOT_URL", None)
 SNAPSHOT_FILENAME = env.str("SNAPSHOT_FILENAME", "creep.jpg")
 STREAM_URL = env.str("STREAM_URL", None)
 GIF_LENGTH = env.int("GIF_LENGTH", 5)
+GIF_FPS = env.int("GIF_FPS", 15)
 DISCORD_TOKEN = env.str("DISCORD_TOKEN")
 
 
@@ -64,14 +64,14 @@ async def creep_on_buns(interaction: discord.Interaction):
     await interaction.response.defer(thinking=True)
     if not SNAPSHOT_URL:
         await interaction.followup.send("No snapshot URL provided.")
-        await log.error("No snapshot URL provided")
+        await log.aerror("No snapshot URL provided")
         return
 
     if SNAPSHOT_LOCK.locked():
         await interaction.followup.send(
             "Already creeping on the buns. Please wait or try again later."
         )
-        await log.warning("Already creeping on the buns")
+        await log.awarning("Already creeping on the buns")
         return
 
     async with SNAPSHOT_LOCK:
@@ -82,7 +82,7 @@ async def creep_on_buns(interaction: discord.Interaction):
             await interaction.followup.send(
                 "Failed to fetch image. Please try again later."
             )
-            await log.error("Failed to fetch image", error=str(e))
+            await log.aerror("Failed to fetch image", error=str(e))
             return
         await interaction.followup.send(
             content="👀", file=discord.File(image, SNAPSHOT_FILENAME)
@@ -98,7 +98,7 @@ async def linger_on_buns(interaction: discord.Interaction):
     await interaction.response.defer(thinking=True)
     if not STREAM_URL:
         await interaction.followup.send("No stream URL provided.")
-        await log.error("No stream URL provided")
+        await log.aerror("No stream URL provided")
         return
 
     if GIF_LOCK.locked():
@@ -116,7 +116,7 @@ async def linger_on_buns(interaction: discord.Interaction):
             await interaction.followup.send(
                 "Failed to fetch gif. Please try again later."
             )
-            await log.error("Failed to fetch gif", error=str(e))
+            await log.aerror("Failed to fetch gif", error=str(e))
             return
         await interaction.followup.send(
             content="👀", file=discord.File(Path("output.gif"))
@@ -136,8 +136,8 @@ async def get_snapshot() -> io.BytesIO:
             return io.BytesIO(await resp.read())
 
 
-async def get_gif():
-    """Fetches a gif from stream_url. Returns a BytesIO."""
+async def get_gif() -> None:
+    """Fetches a gif from stream_url. File is saved as output.gif."""
     ffmpeg = (
         FFmpeg()
         .option("y")
@@ -146,16 +146,14 @@ async def get_gif():
             rtsp_transport="tcp",
             rtsp_flags="prefer_tcp",
         )
-        .output("output.gif")
+        .output("output.gif", vf=f"fps={GIF_FPS}", t=GIF_LENGTH)
     )
 
-    @ffmpeg.on("progress")
-    def time_to_terminate(progress: Progress):
-        # If you have recorded more than 60 frames, stop recording
-        if progress.frame > GIF_LENGTH * 15:
-            ffmpeg.terminate()
-
-    await ffmpeg.execute()
+    try:
+        result = await ffmpeg.execute(timeout=30)
+    except asyncio.TimeoutError as e:
+        await log.aerror("Timed out while fetching gif", stdout=result)
+        raise e
 
 
 if __name__ == "__main__":

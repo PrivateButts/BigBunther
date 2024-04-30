@@ -2,11 +2,11 @@ version: '3'
 services:
   app:
     image: ghcr.io/privatebutts/bigbunther:main
-    build:
-      # Remove this section if you're not building from source
-      context: .
-      dockerfile: Dockerfile
     restart: unless-stopped
     environment:
       SNAPSHOT_URL: example.com/snapshot.jpg
+      SNAPSHOT_FILENAME: creep.jpg
+      STREAM_URL: rtsp://example.com/stream
+      GIF_LENGTH: 5
+      GIF_FPS: 15
       DISCORD_TOKEN: YOUR_DISCORD_TOKEN

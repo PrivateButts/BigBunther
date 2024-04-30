@@ -74,7 +74,34 @@ docker run -d --restart unless-stopped --name bigbunther \
   ghcr.io/privatebutts/bigbunther:main
 ```
 
+Refer to the [configuration reference table](#configuration-reference) for how to set the ENVs
+
 ## Manual
+
+If you don't want to use Docker for some reason, the requirements to install and run the application directly aren't onerous. You'll need git, Python 3.12 and [pdm](https://github.com/pdm-project/pdm) installed. For convenience, a [justfile](https://github.com/casey/just) has been provided with helper scripts (`just setup`). If you don't have just, you can follow these steps:
+
+1. Clone the repo to where you want to install the application:
+
+    `git clone https://github.com/PrivateButts/BigBunther.git`
+
+2. cd into the application directory
+
+    `cd BigBunther`
+
+3. Setup your virtual environment
+
+    `pdm sync --prod`
+
+4. Create and edit `./src/bigbunther/.env` using the provided .env.example as a starting point. Use the [configuration reference table](#configuration-reference) below to guide your tweaking.
+
+5. cd into the application folder
+
+    `cd src/bigbunther/`
+
+6. Start the application
+
+    `pdm run main.py`
+
 
 ## Configuration Reference
 Configuration is pulled in through environmental variables. If you'd rather use a file, place a `.env` file in the `./src/bigbunther/` folder (the same as `.env.example`). Uses `PARAMETER=VALUE` format.

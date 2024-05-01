@@ -42,7 +42,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # install dependencies
-RUN apt update && apt install ffmpeg libsm6 libxext6  -y
+RUN apt update && apt install gifsicle ffmpeg libsm6 libxext6  -y
 
 # retrieve packages from build stage
 COPY --from=build-venv /opt/venv /opt/venv

@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:f857fe3bbb2b7bd37ae61af03e007028dbb0e215f4b9737cba865a34d7701646"
+content_hash = "sha256:ace5e1dd241694c1d1323fc8ea97cae08a09051bc6ac53384495841cea111433"
 
 [[package]]
 name = "aiodns"
@@ -385,6 +385,18 @@ files = [
 ]
 
 [[package]]
+name = "pygifsicle"
+version = "1.0.7"
+summary = "Python package wrapping the gifsicle library for editing and optimizing gifs."
+groups = ["default"]
+dependencies = [
+    "support-developer>=1.0.5",
+]
+files = [
+    {file = "pygifsicle-1.0.7.tar.gz", hash = "sha256:506ae0e4c76992a4fd6097da2d3f224a869ad504879fb1191d6af96c3d394ef8"},
+]
+
+[[package]]
 name = "python-ffmpeg"
 version = "2.0.12"
 requires_python = ">=3.7"
@@ -408,6 +420,15 @@ groups = ["default"]
 files = [
     {file = "structlog-24.1.0-py3-none-any.whl", hash = "sha256:3f6efe7d25fab6e86f277713c218044669906537bb717c1807a09d46bca0714d"},
     {file = "structlog-24.1.0.tar.gz", hash = "sha256:41a09886e4d55df25bdcb9b5c9674bccfab723ff43e0a86a1b7b236be8e57b16"},
+]
+
+[[package]]
+name = "support-developer"
+version = "1.0.5"
+summary = "Package designed to centralize messages to support developers development work."
+groups = ["default"]
+files = [
+    {file = "support_developer-1.0.5.tar.gz", hash = "sha256:7739f63766b90480ee71d56c70ed8953500c48ab19e2782f867786642fce03d9"},
 ]
 
 [[package]]

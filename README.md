@@ -108,12 +108,16 @@ Configuration is pulled in through environmental variables. If you'd rather use 
 
 Parameter | Type | Required | Default | Description
 ----------|------|----------|---------|------------
+TARGET_NAME | String | No | `buns` | Noun to insert into several strings used in the application
 SNAPSHOT_URL | String | For `/creep` | None | Sets the url Big Bunther will scrape when `/creep` is called. Should return an image that Discord can handle
 SNAPSHOT_FILENAME | String | No | `creep.jpg` | The filename that will be sent to Discord. Extension should match what you're scraping from the camera.
 STREAM_URL | String | For `/linger` | None | Sets the url Big Bunther will send to FFMPEG for recording. Should be in the same format as an FFMPEG input.
 GIF_LENGTH | Integer | No | 5 | Sets how long FFMPEG will record from the stream
 GIF_FPS | Integer | No | 15 | Sets the framerate of the gif output
 DISCORD_TOKEN | String | Yes | None | A bot token from the [Discord Developer Portal](https://discord.com/developers/applications). [Refer to these instructions on how to generate one](https://discordpy.readthedocs.io/en/stable/discord.html#discord-intro).
+DISCORD_ACTIVITY_MESSAGE | String | No | `two little dorks` | Message that will show in the sidebar of the bot
+HTTP_TIMEOUT | Integer | No | 30 | Sets the timeout for snapshot requests
+FFMPEG_TIMEOUT | Integer | No | 30 | Sets the timeout for gif requests
 
 # Why does this exist?
 

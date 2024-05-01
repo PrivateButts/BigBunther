@@ -22,12 +22,15 @@ environ.Env.read_env(BASE_DIR / ".env")
 
 
 # Environment Variables
+TARGET_NAME = env.str("TARGET_NAME", "buns")
 SNAPSHOT_URL = env.str("SNAPSHOT_URL", None)
 SNAPSHOT_FILENAME = env.str("SNAPSHOT_FILENAME", "creep.jpg")
 STREAM_URL = env.str("STREAM_URL", None)
 GIF_LENGTH = env.int("GIF_LENGTH", 5)
 GIF_FPS = env.int("GIF_FPS", 15)
 DISCORD_TOKEN = env.str("DISCORD_TOKEN")
+DISCORD_COMMAND_PREFIX = env.str("DISCORD_COMMAND_PREFIX", "")
+DISCORD_ACTIVITY_MESSAGE = env.str("DISCORD_ACTIVITY_MESSAGE", "two little dorks")
 
 
 # Job locks
@@ -40,7 +43,7 @@ BOT = commands.Bot(
     command_prefix="!",
     intents=discord.Intents.default(),
     activity=discord.Activity(
-        name="two little idiots", type=discord.ActivityType.watching
+        name=DISCORD_ACTIVITY_MESSAGE, type=discord.ActivityType.watching
     ),
 )
 
@@ -59,8 +62,10 @@ async def on_ready():
         await log.aexception("Failed to sync commands.", exc_info=e)
 
 
-@BOT.tree.command(name="creep", description="Creep on the buns")
-async def creep_on_buns(interaction: discord.Interaction):
+@BOT.tree.command(
+    name=f"{DISCORD_COMMAND_PREFIX}creep", description=f"Creep on the {TARGET_NAME}"
+)
+async def creep_on_critters(interaction: discord.Interaction):
     await interaction.response.defer(thinking=True)
     if not SNAPSHOT_URL:
         await interaction.followup.send("No snapshot URL provided.")
@@ -69,13 +74,13 @@ async def creep_on_buns(interaction: discord.Interaction):
 
     if SNAPSHOT_LOCK.locked():
         await interaction.followup.send(
-            "Already creeping on the buns. Please wait or try again later."
+            f"Already creeping on the {TARGET_NAME}. Please wait or try again later."
         )
-        await log.awarning("Already creeping on the buns")
+        await log.awarning(f"Already creeping on the {TARGET_NAME}")
         return
 
     async with SNAPSHOT_LOCK:
-        await log.ainfo("Creeping on the buns", user=interaction.user.name)
+        await log.ainfo(f"Creeping on the {TARGET_NAME}", user=interaction.user.name)
         try:
             image = await get_snapshot()
         except Exception as e:
@@ -87,14 +92,14 @@ async def creep_on_buns(interaction: discord.Interaction):
         await interaction.followup.send(
             content="👀", file=discord.File(image, SNAPSHOT_FILENAME)
         )
-        await log.ainfo("Creeped on the buns")
+        await log.ainfo(f"Creeped on the {TARGET_NAME}")
 
 
 @BOT.tree.command(
-    name="linger",
-    description="Creep on the buns (but linger long enough to make a gif)",
+    name=f"{DISCORD_COMMAND_PREFIX}linger",
+    description=f"Creep on the {TARGET_NAME} (but linger long enough to make a gif)",
 )
-async def linger_on_buns(interaction: discord.Interaction):
+async def linger_on_critters(interaction: discord.Interaction):
     await interaction.response.defer(thinking=True)
     if not STREAM_URL:
         await interaction.followup.send("No stream URL provided.")
@@ -103,13 +108,13 @@ async def linger_on_buns(interaction: discord.Interaction):
 
     if GIF_LOCK.locked():
         await interaction.followup.send(
-            "Already lingering on the buns. Please wait or try again later."
+            f"Already lingering on the {TARGET_NAME}. Please wait or try again later."
         )
-        await log.warning("Already lingering on the buns")
+        await log.warning(f"Already lingering on the {TARGET_NAME}")
         return
 
     async with GIF_LOCK:
-        await log.ainfo("Lingering on the buns", user=interaction.user.name)
+        await log.ainfo(f"Lingering on the {TARGET_NAME}", user=interaction.user.name)
         try:
             await get_gif()
         except Exception as e:
@@ -121,7 +126,7 @@ async def linger_on_buns(interaction: discord.Interaction):
         await interaction.followup.send(
             content="👀", file=discord.File(Path("output.gif"))
         )
-        await log.ainfo("Lingered on the buns")
+        await log.ainfo(f"Lingered on the {TARGET_NAME}")
 
 
 async def get_snapshot() -> io.BytesIO:
@@ -150,7 +155,7 @@ async def get_gif() -> None:
     )
 
     try:
-        result = await ffmpeg.execute(timeout=30)
+        result = await ffmpeg.execute(timeout=env.int("FFMPEG_TIMEOUT", 30))
     except asyncio.TimeoutError as e:
         await log.aerror("Timed out while fetching gif", stdout=result)
         raise e
